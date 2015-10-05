@@ -6,7 +6,7 @@
   </style>
 
 <div class="demo-title">
-    <p><a href="http://trackingjs.com" target="_parent">tracking.js</a> － use red_lighter color to draw and cyan to erase</p>
+    <p><a href="http://trackingjs.com" target="_parent">tracking.js</a> － use something red color to draw and hulk_green to erase</p>
   </div>
 
   <div class="demo-frame">
@@ -20,11 +20,18 @@
 
   <script>
   	tracking.ColorTracker.registerColor('red_lighter', function(r, g, b) {
-  		if ( (r >= 87 && r <= 90) && (g >= 0 && g <= 40) && (b >= 0 && b <= 30) ) {
+  		if ( (r >= 147 && r <= 170) && (g >= 2 && g <= 40) && (b >= 12 && b <= 35) ) {
     		return true;
   		}
   		return false;
 	});
+
+    tracking.ColorTracker.registerColor('hulk_green', function(r, g, b) {
+      if ( (r >= 55 && r <= 70) && (g >= 90 && g <= 120) && (b >= 50 && b <= 70) ) {
+        return true;
+      }
+      return false;
+  });
 
 
 
@@ -36,7 +43,7 @@
       var drawSegments = [[]];
       var segment = 0;
 
-      var tracker = new tracking.ColorTracker(['red_lighter', 'cyan']);
+      var tracker = new tracking.ColorTracker(['red_lighter', 'hulk_green']);
 
       tracking.track('#video', tracker, { camera: true });
 
@@ -53,7 +60,7 @@
           if (rect.color === 'red_lighter') {
             draw(rect);
           }
-          else if (rect.color === 'cyan') {
+          else if (rect.color === 'hulk_green') {
             erase(rect);
           }
         });
