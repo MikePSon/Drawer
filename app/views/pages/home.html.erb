@@ -1,2 +1,86 @@
 <% title("Home Page") %>
-<h1><i class="fa fa-home"></i> Home Page <small>views/pages/home.html.erb</small></h1>
+  <style>
+    .demo-title {text-align: center; margin-top: 25px;}
+    .draw-frame {text-align: center;}
+    #video, #canvas {border: 1px solid;}
+  </style>
+
+<div class="demo-title">
+    <p><a href="http://trackingjs.com" target="_parent">tracking.js</a> － use red_lighter color to draw and cyan to erase</p>
+  </div>
+
+  <div class="demo-frame">
+    <div class="demo-container">
+      <div class="draw-frame">
+        <video id="video" width="400" height="300" preload autoplay loop muted></video>
+        <canvas id="canvas" width="400" height="300"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  	tracking.ColorTracker.registerColor('red_lighter', function(r, g, b) {
+  		if ( (r >= 87 && r <= 90) && (g >= 0 && g <= 40) && (b >= 0 && b <= 30) ) {
+    		return true;
+  		}
+  		return false;
+	});
+
+
+
+    window.onload = function() {
+      var video = document.getElementById('video');
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+
+      var drawSegments = [[]];
+      var segment = 0;
+
+      var tracker = new tracking.ColorTracker(['red_lighter', 'cyan']);
+
+      tracking.track('#video', tracker, { camera: true });
+
+      tracker.on('track', function(event) {
+        if (event.data.length === 0 && drawSegments[segment].length > 0) {
+          segment++;
+
+          if (!drawSegments[segment]) {
+            drawSegments[segment] = [];
+          }
+        }
+
+        event.data.forEach(function(rect) {
+          if (rect.color === 'red_lighter') {
+            draw(rect);
+          }
+          else if (rect.color === 'cyan') {
+            erase(rect);
+          }
+        });
+      });
+
+      function draw(rect) {
+        drawSegments[segment].push(rect.x + rect.width / 2, rect.y + rect.height / 2);
+      }
+
+      function erase(rect) {
+        context.clearRect(rect.x, rect.y, rect.width, rect.height);
+      }
+
+      function isInsideRect(x, y, rect) {
+        return rect.x <= x && x <= rect.x + rect.width &&
+            rect.y <= y && y <= rect.y + rect.height;
+      }
+
+      (function loop() {
+          for (var i = 0, len = drawSegments.length; i < len; i++) {
+              drawSpline(context, drawSegments[i], 0.5, false);
+          }
+
+          drawSegments = [drawSegments[drawSegments.length - 1]];
+          segment = 0;
+
+          requestAnimationFrame(loop);
+      }());
+    };
+  </script>

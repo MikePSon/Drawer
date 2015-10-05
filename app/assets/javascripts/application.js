@@ -16,3 +16,6 @@
 //= require bootstrap 
 //= require analytics
 //= require common
+//= require tracking-min
+//= require splines.min
+//= require stats.min
